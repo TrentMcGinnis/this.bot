@@ -3,9 +3,12 @@ const discord = require("discord.js");
 const bot = new discord.Client();
 const fs = require("fs");
 
+const scheduler = require("./helpers/schedule-helper");
+const guildHelper = require("./helpers/guild-helper");
+
 bot.on("ready", () => {
-    init();
-    console.log("Bot Online!");
+  init();
+  console.log("Bot Online!");
 })
 
 const PREFIX = "!";
@@ -19,7 +22,7 @@ bot.on("message", message => {
       try {
         bot.commands.get(args[0].toLowerCase()).execute(message, args);
       } catch (e) {
-        message.channel.send(`Not a command`);
+        message.channel.send(e);
       }
     } else {
       return;
@@ -29,17 +32,27 @@ bot.on("message", message => {
   }
 });
 
+bot.on("guildCreate", (guild) => {
+  guildHelper.addGuild(guild);
+});
+
+bot.on("guildDelete", (guild) => {
+  guildHelper.removeGuild(guild);
+});
+
 bot.login(process.env.DiscordToken);
 
-init = function() {
-    bot.commands = new discord.Collection();
-    const commandFiles = fs
-      .readdirSync("./commands")
-      .filter(file => file.endsWith(".js"));
-  
-    for (const file of commandFiles) {
-      const command = require(`./commands/${file}`);
-      bot.commands.set(command.name, command);
-      console.log(command.name + " loaded");
-    }
+init = function () {
+  bot.commands = new discord.Collection();
+  const commandFiles = fs
+    .readdirSync("./commands")
+    .filter(file => file.endsWith(".js"));
+
+  for (const file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    bot.commands.set(command.name, command);
+    console.log(command.name + " loaded");
+  }
+  guildHelper.initialize(bot);
+  scheduler.startNewsSchedule();
 }
