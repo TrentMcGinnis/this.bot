@@ -40,6 +40,14 @@ bot.on("guildDelete", (guild) => {
   guildHelper.removeGuild(guild);
 });
 
+bot.on("guildMemberAdd", (member) => {
+  let embed = new discord.RichEmbed();
+  embed
+  .setTitle(`Welcome to ${member.guild.name}!`)
+  //TODO add user info to embed.
+  member.guild.channels.find("name", "general").send(embed);
+});
+
 bot.login(process.env.DiscordToken);
 
 init = function () {
