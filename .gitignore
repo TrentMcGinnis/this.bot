@@ -105,3 +105,6 @@ dist
 
 # AWS
 thisbotkey.pem
+
+#APIKEYS
+credentials.json
