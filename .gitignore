@@ -105,3 +105,4 @@ dist
 
 # AWS
 thisbotkey.pem
+credentials.json
